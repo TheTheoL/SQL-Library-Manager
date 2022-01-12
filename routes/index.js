@@ -16,14 +16,14 @@ function asyncHandler(cb){
 
 /* GET home page. */
 router.get('/', asyncHandler(async (req, res) => {
-  // res.render('index', { title: 'Express' });
-  const allBooks = await Book.findAll();
-  
+    const allBooks = await Book.findAll();
+    res.json(allBooks);
+
 }));
-console.log(allBooks.toJSON());
 module.exports = router;
 
 
 
 
 
+// I checked out the video you suggested and referred back to the code of one of the small projects I did during the course and I think I got the code right. But my console is still throwing me an error saying 'await is only valid in async functions' even though it is in an async function. 
