@@ -2,8 +2,7 @@ var express = require('express');
 var router = express.Router();
 const Book = require('../models').Book;
 
-//static middleware 
-app.use("/static", express.static("public"));
+
 
 /* Handler function to wrap each route. */
 function asyncHandler(cb){
