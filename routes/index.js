@@ -16,13 +16,7 @@ function asyncHandler(cb){
   }
 }
 
-/* GET home page. */
-router.get('/', asyncHandler(async (req, res) => {
-    const allBooks = await Book.findAll();
-    res.json(allBooks);
 
-}));
-module.exports = router;
 
 //ROUTES
 
@@ -105,3 +99,5 @@ router.post('/books/:id/delete', asyncHandler(async (req, res) => {
     }   
   
 }));
+
+module.exports = router;
