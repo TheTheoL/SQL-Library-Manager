@@ -107,6 +107,7 @@ router.post('/books/:id', asyncHandler(async(req, res) => {
     updateBook = await Books.findByPk(req.params.id);
     if(updateBook) {
     await books.update(req.body);
+    res.redirect("/abooks/" + books.id); 
     res.redirect("/");
     } else {
       res.sendStatus(404);
