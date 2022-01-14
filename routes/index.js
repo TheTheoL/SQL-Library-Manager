@@ -100,4 +100,25 @@ router.post('/books/:id/delete', asyncHandler(async (req, res) => {
   
 }));
 
+//POST an updated book to the database.
+router.post('/books/:id', asyncHandler(async(req, res) => {
+  let updateBook;
+  try{
+    updateBook = await Books.findByPk(req.params.id);
+    if(updateBook) {
+    await books.update(req.body);
+    res.redirect("/");
+    } else {
+      res.sendStatus(404);
+    }
+  } catch (error) {
+    if (error.name === 'SequelizeValidationError') {
+      updateBook = await Books.build(req.body);
+      books.id = req.params.id;
+      res.render('update-book', { updateBook, errors: error.errors, title: 'Update Book'});
+    } else {
+      throw error;
+    }
+  }
+}));
 module.exports = router;
