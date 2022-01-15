@@ -71,14 +71,14 @@ router.get('/books/:id', asyncHandler(async (req, res) => {
 
 //Route that updates book info in the database 
 router.get('/books/:id', asyncHandler(async (req, res) => {
+  const books = await Book.findByPk(req.params.id);
 
   try {
-    const books = await Book.findByPk(req.params.id);
     await books.update(req.body);
     res.redirect('/books');
   } catch (error) {
     if(error.name === "SequelizeValidationError") {
-      const books = await Book.build(req.body);
+      const books = await Book.create(req.body);
       books.id = req.params.id; // make sure correct article gets updated
       res.render("update-book", { books, errors: error.errors, title: "Update Book" });
     } else {
@@ -101,25 +101,25 @@ router.post('/books/:id/delete', asyncHandler(async (req, res) => {
 }));
 
 //POST an updated book to the database.
-router.post('/books/:id', asyncHandler(async(req, res) => {
-  let updateBook;
-  try{
-    updateBook = await Books.findByPk(req.params.id);
-    if(updateBook) {
-    await books.update(req.body);
-    res.redirect("/abooks/" + books.id); 
-    res.redirect("/");
-    } else {
-      res.sendStatus(404);
-    }
-  } catch (error) {
-    if (error.name === 'SequelizeValidationError') {
-      updateBook = await Books.build(req.body);
-      books.id = req.params.id;
-      res.render('update-book', { updateBook, errors: error.errors, title: 'Update Book'});
-    } else {
-      throw error;
-    }
-  }
-}));
+// router.post('/books/:id', asyncHandler(async(req, res) => {
+//   let updateBook;
+//   try{
+//     updateBook = await Books.findByPk(req.params.id);
+//     if(updateBook) {
+//     await books.update(req.body);
+//     res.redirect("/abooks/" + books.id); 
+//     res.redirect("/");
+//     } else {
+//       res.sendStatus(404);
+//     }
+//   } catch (error) {
+//     if (error.name === 'SequelizeValidationError') {
+//       updateBook = await Books.build(req.body);
+//       books.id = req.params.id;
+//       res.render('update-book', { updateBook, errors: error.errors, title: 'Update Book'});
+//     } else {
+//       throw error;
+//     }
+//   }
+// }));
 module.exports = router;
