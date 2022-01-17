@@ -59,7 +59,7 @@ router.post('/books/new', asyncHandler(async (req, res) => {
 }));
 
 // /books.:id to show book detail form
-router.get('/books/:id', asyncHandler(async (req, res) => {
+router.get('/books/:id', asyncHandler(async (req, res, next) => {
   const book = await Book.findByPk(req.params.id);
 
   if(book) {
@@ -73,7 +73,7 @@ router.get('/books/:id', asyncHandler(async (req, res) => {
 }));
 
 //Route that updates book info in the database 
-router.post('/books/:id', asyncHandler(async (req, res) => {
+router.post('/books/:id', asyncHandler(async (req, res, next) => {
   const book = await Book.findByPk(req.params.id);
 
   try {
@@ -84,6 +84,7 @@ router.post('/books/:id', asyncHandler(async (req, res) => {
       const book = await Book.build(req.body);
       book.id = req.params.id; // make sure correct article gets updated
       res.render("update-book", { title: 'Update Book', book, errors: error.errors});
+      next(error);
     } else {
       throw error;
     }
@@ -117,9 +118,7 @@ router.use((req, res, next) => {
 
 //Global error handler
 router.use((error, req, res, next) => {
-  if (error) {
-    console.log('Global error handler called', error);
-  }
+  
   if (error.status === 404){
    res.status(404).render('page-not-found', { error });
   } else {
