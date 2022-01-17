@@ -45,7 +45,7 @@ router.get('/books/new', asyncHandler(async (req, res) => {
 router.post('/books/new', asyncHandler(async (req, res) => {
   let book;
   try {
-    book = await Book.create(req.body);
+    const book = await Book.create(req.body);
     res.redirect("/");
   
   } catch (error) {
@@ -63,24 +63,27 @@ router.get('/books/:id', asyncHandler(async (req, res) => {
   const book = await Book.findByPk(req.params.id);
 
   if(book) {
-      res.render('update-book', { title: book.title, books } );
+      res.render('update-book', { title: book.title, book } );
   }else {
-    res.sendStatus(404);
+    const err = new Error();
+    err.status = 404;
+    err.message = 'Sorry, cannot find book.';
+    next(err);
   }
 }));
 
 //Route that updates book info in the database 
-router.get('/books/:id', asyncHandler(async (req, res) => {
+router.post('/books/:id', asyncHandler(async (req, res) => {
   const book = await Book.findByPk(req.params.id);
 
   try {
     await book.update(req.body);
-    res.redirect('/books');
+    res.redirect('/');
   } catch (error) {
     if(error.name === "SequelizeValidationError") {
       const book = await Book.build(req.body);
       book.id = req.params.id; // make sure correct article gets updated
-      res.render("update-book", { book, errors: error.errors, title: "Update Book" });
+      res.render("update-book", { title: 'Update Book', book, errors: error.errors});
     } else {
       throw error;
     }
@@ -102,17 +105,17 @@ router.post('/books/:id/delete', asyncHandler(async (req, res) => {
 
 //ERROR HANDLERS
 
-//404
+//404 error handler
 router.use((req, res, next) => {
   const error = new Error();
   error.status = 404;
-  error.message = 'Page Not Found';
+  error.message = 'Sorry, page does not exist.';
   console.log(error.status, error.message);
   res.status(404).render('page-not-found', { error });
   next(error);
 });
 
-//Global
+//Global error handler
 router.use((error, req, res, next) => {
   if (error) {
     console.log('Global error handler called', error);
@@ -121,11 +124,10 @@ router.use((error, req, res, next) => {
    res.status(404).render('page-not-found', { error });
   } else {
    error.status = 500;
-   error.message = 'Something Went Wrong';
+   error.message = 'Oh no! Server is having issues with that';
    console.log(error.message, error.status);
    res.status(500).render('error', { error });
   }
 });
-
 
 module.exports = router;
